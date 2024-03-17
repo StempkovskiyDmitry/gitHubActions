@@ -7,6 +7,8 @@ import { Colors } from '#theme/Variables';
 
 import { useTimer } from '#hooks';
 
+import { Action } from '#models/Action';
+
 import { RootRoutes, RootScreenProps } from '#navigators/types';
 
 import { useGetEventsQuery } from '#services/modules';
@@ -41,6 +43,11 @@ export const GitHubActions: React.FC<
     }
   }, [timer]);
 
+  const onPressActionCard = (action: Action) => {
+    onPause();
+    navigate(RootRoutes.DetailGitHubAction, { action });
+  };
+
   return (
     <View style={styles.wrapper}>
       <FlatList
@@ -56,9 +63,7 @@ export const GitHubActions: React.FC<
         renderItem={({ item }) => (
           <ActionCard
             action={item}
-            onPress={() =>
-              navigate(RootRoutes.DetailGitHubAction, { action: item, onPause })
-            }
+            onPress={() => onPressActionCard(item)}
           />
         )}
       />

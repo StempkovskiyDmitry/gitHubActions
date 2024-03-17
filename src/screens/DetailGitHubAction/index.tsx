@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 
 import { Colors } from '#theme/Variables';
@@ -10,10 +10,7 @@ import { Node } from './components/Node';
 export const DetailGitHubAction: React.FC<
   RootScreenProps<RootRoutes.DetailGitHubAction>
 > = ({ route }) => {
-  const { action, onPause } = route.params;
-  useEffect(() => {
-    onPause();
-  }, []);
+  const { action } = route.params;
 
   return (
     <ScrollView contentContainerStyle={styles.wrapper}>

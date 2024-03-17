@@ -9,7 +9,7 @@ export enum RootRoutes {
 
 export type RootStackParamList = {
   [RootRoutes.GitHubActions]: undefined;
-  [RootRoutes.DetailGitHubAction]: { action: Action; onPause: () => void };
+  [RootRoutes.DetailGitHubAction]: { action: Action };
 };
 
 export type RootScreenProps<RouteName extends RootRoutes> =
