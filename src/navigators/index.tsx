@@ -10,16 +10,16 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator = () => {
   return (
-    <Stack.Navigator initialRouteName={RootRoutes.GitHubActions}>
+    <Stack.Navigator
+      initialRouteName={RootRoutes.GitHubActions}
+      screenOptions={{ headerShown: false }}>
       <Stack.Screen
         component={GitHubActions}
         name={RootRoutes.GitHubActions}
-        options={{ title: 'List Action' }}
       />
       <Stack.Screen
         component={DetailGitHubAction}
         name={RootRoutes.DetailGitHubAction}
-        options={{ title: 'Detail Action' }}
       />
     </Stack.Navigator>
   );

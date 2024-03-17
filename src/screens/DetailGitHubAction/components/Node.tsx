@@ -18,6 +18,7 @@ export const Node = ({ title, value, isLastNode }: INode) => {
       {value && typeof value === 'object' ? (
         Object.keys(value).map((key, index, array) => (
           <Node
+            key={`${key}`}
             isLastNode={array.length - 1 !== index}
             title={key}
             // @ts-ignore: todo change type value
