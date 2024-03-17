@@ -1,5 +1,7 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
+import { Action } from '#models/Action';
+
 export enum RootRoutes {
   GitHubActions = 'GitHubActions',
   DetailGitHubAction = 'DetailGitHubAction',
@@ -7,7 +9,7 @@ export enum RootRoutes {
 
 export type RootStackParamList = {
   [RootRoutes.GitHubActions]: undefined;
-  [RootRoutes.DetailGitHubAction]: { action: {} };
+  [RootRoutes.DetailGitHubAction]: { action: Action; onPause: () => void };
 };
 
 export type RootScreenProps<RouteName extends RootRoutes> =

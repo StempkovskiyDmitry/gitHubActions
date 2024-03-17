@@ -1,14 +1,25 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { Colors } from '#theme/Variables';
 
 import { Action } from '#models/Action';
 
-export const ActionCard = (props: Action) => {
+interface IActionCard {
+  action: Action;
+  onPress: () => void;
+}
+
+export const ActionCard = ({ action, onPress }: IActionCard) => {
   return (
-    <TouchableOpacity style={styles.wrapper}>
-      <Text style={styles.type}>{props.type}</Text>
+    <TouchableOpacity
+      activeOpacity={0.7}
+      style={styles.wrapper}
+      onPress={onPress}>
+      <View style={styles.wrapperInfo}>
+        <Text style={[styles.actionId, styles.type]}>id: {action.id}</Text>
+        <Text style={styles.type}>{action.type}</Text>
+      </View>
     </TouchableOpacity>
   );
 };
@@ -21,6 +32,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     padding: 10,
+  },
+  wrapperInfo: {
+    alignItems: 'center',
+  },
+  actionId: {
+    fontWeight: 'bold',
   },
   type: {
     color: Colors.black,

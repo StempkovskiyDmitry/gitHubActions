@@ -1,12 +1,7 @@
-import React from 'react';
-import {
-  StyleSheet,
-  View,
-  FlatList,
-  // RefreshControl,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import React, { useEffect, useCallback, useState } from 'react';
+import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
+
+import { useNavigation } from '@react-navigation/native';
 
 import { Colors } from '#theme/Variables';
 
@@ -17,42 +12,55 @@ import { RootRoutes, RootScreenProps } from '#navigators/types';
 import { useGetEventsQuery } from '#services/modules';
 
 import { ActionCard } from './components/ActionCard';
-// import { POOLING_INTERVAL } from './config';
+
+const TIMER_REFETCH_REQUEST = 30;
 
 export const GitHubActions: React.FC<
   RootScreenProps<RootRoutes.GitHubActions>
 > = () => {
+  const { navigate } = useNavigation();
+  const [refreshing, setRefreshing] = useState(false);
   const eventQuery = useGetEventsQuery(undefined);
   const { timer, onStart, onPause, onReset } = useTimer();
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await eventQuery.refetch().unwrap();
+    onReset();
+    setRefreshing(false);
+  }, []);
+
+  useEffect(() => {
+    onStart();
+  }, []);
+
+  useEffect(() => {
+    if (timer === TIMER_REFETCH_REQUEST) {
+      eventQuery.refetch();
+      onReset();
+    }
+  }, [timer]);
+
   return (
     <View style={styles.wrapper}>
-      <View style={styles.wrapperTimer}>
-        <Text style={styles.timer}>{timer}</Text>
-        <View style={styles.wrapperBtns}>
-          <TouchableOpacity
-            style={styles.btn}
-            onPress={onStart}>
-            <Text style={styles.btnText}>Start</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.btn}
-            onPress={onPause}>
-            <Text style={styles.btnText}>Pause</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.btn}
-            onPress={onReset}>
-            <Text style={styles.btnText}>Reset</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
       <FlatList
         contentContainerStyle={styles.list}
         data={eventQuery.data}
         keyExtractor={item => `${item.id}`}
-        renderItem={({ item }) => <ActionCard {...item} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
+        renderItem={({ item }) => (
+          <ActionCard
+            action={item}
+            onPress={() =>
+              navigate(RootRoutes.DetailGitHubAction, { action: item, onPause })
+            }
+          />
+        )}
       />
     </View>
   );
@@ -68,27 +76,5 @@ const styles = StyleSheet.create({
   },
   list: {
     gap: 8,
-  },
-  wrapperTimer: {
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  timer: {
-    fontSize: 20,
-  },
-  wrapperBtns: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  btn: {
-    backgroundColor: Colors.mainBlue,
-    borderRadius: 8,
-    padding: 10,
-  },
-  btnText: {
-    color: Colors.white,
   },
 });
