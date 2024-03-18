@@ -1,11 +1,31 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+import { useGetEventsQuery } from '#services/modules';
+
+import { setListAction } from '#store/App';
+
+import { useAppDispatch } from '.';
+
+const TIMER_REFETCH_REQUEST = 30;
 
 export const useTimer = () => {
   const [timer, setTimer] = useState(0);
   const pausedRef = useRef(false);
   const intervalRef = useRef(0);
+  const eventQuery = useGetEventsQuery();
 
-  const onStart = () => {
+  const dispatch = useAppDispatch();
+
+  const _onUpdateEvent = async () => {
+    try {
+      const response = await eventQuery.refetch().unwrap();
+      if (response) {
+        dispatch(setListAction(response));
+      }
+    } catch (error) {}
+  };
+
+  const _onStart = () => {
     if (intervalRef.current) {
       return;
     }
@@ -19,14 +39,24 @@ export const useTimer = () => {
     intervalRef.current = 0;
     pausedRef.current = false;
     setTimer(0);
-    onStart();
+    _onStart();
   };
 
   const onPause = () => (pausedRef.current = !pausedRef.current);
 
+  useEffect(() => {
+    _onUpdateEvent();
+    _onStart();
+  }, []);
+
+  useEffect(() => {
+    if (timer === TIMER_REFETCH_REQUEST) {
+      _onUpdateEvent();
+      onReset();
+    }
+  }, [timer]);
+
   return {
-    timer,
-    onStart,
     onPause,
     onReset,
   };
